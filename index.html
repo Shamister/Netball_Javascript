@@ -138,7 +138,6 @@
     force.on("tick", function(e){
       nodes.each(function(d){
 		if(insidePool(d.x, d.y) && isStart){
-			d.x = width/2;
 			d.y = poolHeight/2;
 		}
 	  })
