@@ -1,281 +1,41 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
-    <title>App</title>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Netball Info(2008-2013)</title>
     <script src="http://d3js.org/d3.v3.js" charset="utf-8"></script>
-	<style>
-	text{
-		pointer-events:none;
-		cursor:pointer;
-	}
- 
-	.line {
-		fill: none;
-		stroke: steelblue;
-		stroke-width: 1.5px;
-	}
-	.axis{
-		fill: none;
-		stroke: #000;
-		shape-rendering: crispEdges;
-	}
-	#pool:hover{
-		fill: GoldenRod ;
-	}
-	</style>
-  </head>
-  <body>
-  <script>
-    
-    var teams =  [{"text":"Adelaide Thunderbirds"},
-                  {"text":"Canterbury Tactix"},
-                  {"text":"Central Pulse"},
-                  {"text":"Melbourne Vixens"},
-                  {"text":"New South Wales Swifts"},
-                  {"text":"Northern Mystics"},
-                  {"text":"Queensland Firebirds"},
-                  {"text":"Southern Steel"},
-                  {"text":"Waikato Bay of Plenty Magic"},
-                  {"text":"West Coast Fever"}];
-    initArray(teams,"yellow","team");
-       
-    var countries = [{"text":"New Zealand"},
-                    {"text":"Australia"}];
-    initArray(countries,"aquamarine","country");
-  
-    var venues = [{"text":"Adelaide Arena, Adelaide"},
-                  {"text":"Arena Manawatu, Palmerston North"},
-                  {"text":"Brisbane Convention and Exhibition Centre"},
-                  {"text":"Challenge Stadium, Perth"},
-                  {"text":"ETSA Park, Adelaide"},
-                  {"text":"Energy Events Centre, Rotorua"},
-                  {"text":"Hisense Arena, Melbourne"},
-                  {"text":"Mystery Creek Events Centre, Hamilton"},
-                  {"text":"North Shore Events Centre, Auckland"},
-                  {"text":"Queen Elizabeth Youth Centre, Tauranga"},
-                  {"text":"Stadium Southland, Invercargill"},
-                  {"text":"State Netball and Hockey Centre, Melbourne"},
-                  {"text":"Sydney Olympic Park Sports Centre"},
-                  {"text":"TSB Bank Arena, Wellington"},
-                  {"text":"Te Rauparaha Arena, Porirua"},
-                  {"text":"The Edgar Centre, Dunedin"},
-                  {"text":"Trusts Stadium, Auckland"},
-                  {"text":"Westpac Arena, Christchurch"}];
-    initArray(venues,"orange","venue");
-    
-    var data = teams.concat(countries,venues);
-    
-    var height = 700, width = 1200, poolHeight = 60, isStart = false;
-    var svg = d3.select("body")
-                .append("svg")
-                .attr("height",height)
-                .attr("width",width)
-				.style("position","absolute");
-	var container = d3.select("body")
-					.append("svg")
-					.attr("id","container")
-					.attr("height",poolHeight)
-					.attr("width",width)
-					.style("position","absolute")
-					.style("display","none");
-					
-    var pool = svg.append("rect")
-    		.attr("x",0)
-    		.attr("y",0)
-    		.attr("fill","purple")
-    		.attr("width",width)
-    		.attr("height",poolHeight)
-			.attr("id","pool")
-			.on("click",showDetails);
-	
-    var force = d3.layout.force()
-                          .nodes(data)
-                          .links([])
-                          .size([width,height])
-                          .linkDistance([20])
-                          .charge([-1000])
-                          .gravity(0.3);
-	
-	force.start();
-    
-	var nodeWidth = 300;
-	var nodeHeight = 40;
-	
-    var nodes = svg.selectAll("circle")
-			.data(data)
-			.enter()
-			.append("rect")
-			.attr("width", nodeWidth)
-			.attr("height", nodeHeight)
-			.style("fill",function(d){return d.color})
-			.call(force.drag)
-			.on("mousedown",function(){isStart = true;});
-    
-    var gs = svg.selectAll("g")
-		.data(data)
-		.enter()
-		.append("g");
-    var arcs = gs.append("path")
-		.attr('fill-opacity', '0')
-		.attr("id", function(d,i){return "s"+i;})
-		.attr("d",function(){return "M "+(-nodeWidth*0.4)+" 0 H "+(nodeWidth*0.4);})
-    gs.append("text")
-		.style("font-size",16)
-		.style("font-family", "Impact")
-		.attr("dy",function(d,i){return 5;})
-		.append("textPath")
-		.attr("textLength",function(d,i){return 240;})
-		.attr("xlink:href",function(d,i){return "#s"+i;})
-		.attr("startOffset",'0%')
-		.attr("fill","black")
-		.text(function(d){return d.text;})
-		
-	function insidePool(x, y){
-		if (x > 0 && x < width && y > 0 && y < poolHeight) return true;
-		return false;
-	}
-	
-    force.on("tick", function(e){
-      nodes.each(function(d){
-		if(insidePool(d.x, d.y) && isStart){
-			d.y = poolHeight/2;
-		}
-	  })
-		.attr("x",function(d){return d.x - nodeWidth/2;})
-		.attr("y",function(d){return d.y - nodeHeight/2;});
-      gs.attr("transform", function(d){return "translate("+d.x+","+d.y+")";});
+    <script src="http://d3js.org/queue.v1.min.js"></script>
+    <link rel="stylesheet" href="style/styles.css">
+</head>
+<body>
+    <script src="script/Renderer.js"></script>
+    <script src="script/DataProcessor.js"></script>
+    <script src="script/GraphPad.js"></script>
+    <script src="script/ActionHandler.js"></script>
+	<script src="script/Graphs.js"></script>
+    <script>
+    //static data
+    var height = 800, width = 1200, poolHeight = 60,
+        nodeHeight = 26, textHeight = 12, charWidth = 8,
+        offsetTop = 80, offsetLeft = offsetRight = 50,
+        widthLimit = width - offsetLeft - offsetRight,
+        nodeGap = 8, groupGap = 40,
+        titleOffset = 10, titleHeight = 24,
+        resultTextX = width - 130, instructionClickTextX = width/2 + 200;
+
+    load(function (error, results) {
+        //data loaded
+        var filters = processData(results);
+        var titleData = generateTitles(filters);
+        var data = mergeResults(results);
+
+        var renderer = new Renderer(filters, titleData);
+        var graphPad = new GraphPad();
+
+        appendHandlers(filters, data, renderer, graphPad);
     })
-	
-    function initArray(data,color,type){
-      for(var i=0;i<data.length;i++){
-        data[i].color = color;
-		data[i].type = type;
-      }
-      return data;
-    }
-    
-	var Pad = function(container){
-		
-		container.attr("width", width)
-				.attr("height", height);
-		
-		this.background = container.append("rect")
-									.attr("x",0)
-									.attr("y",0)
-									.attr("fill","white")
-									.attr("width",width)
-									.attr("height",height)
-									.attr("id","background")
-									//.style("display","none");
-									
-		this.closeButton = container.append("circle")
-									.attr("cx",width-50)
-									.attr("cy",50)
-									.attr("r",20)
-									.attr("id","closeButton")
-									.attr("fill","red")
-									//.style("display","none")
-									.on("mousedown",function(){
-										container.style("display","none");
-									});
-		container.append("text")
-					.attr("x",width-55)
-					.attr("y",55)
-					.attr("font-size",15)
-					.text("X")
-		
-		this.open = function(nodes){
-			container.selectAll(".graph").remove();
-			
-			if(nodes.length == 1){
-				container.style("display","block");
-				display(nodes[0]);
-			}
-		};
-		
-		this.close = function(){
-			container.style("display","none");
-		};
-	};
-	
-	var pad = new Pad(container);
-	
-	function showDetails(){
-		var pending = [];
-		for(var i=0;i<data.length;i++){
-			if(insidePool(data[i].x, data[i].y)){
-				pending.push(data[i]);
-			}
-		}
-		pad.open(pending);
-	}
-	
-	function display(node){
-		if(node.type == "team"){
-			lineChart(node,tpData);
-		}else if(node.type == "country"){
-			lineChart(node,tdData);
-		}
-	}
-	
-    var tpData = [{round:0,points:0},
-                  {round:1,points:2},
-                  {round:2,points:2},
-                  {round:3,points:4},
-                  {round:4,points:6},
-                  {round:5,points:6},
-                  {round:6,points:6},
-                  {round:7,points:8},
-                  {round:8,points:10},
-                  {round:9,points:10},
-                  {round:10,points:12},
-                  {round:11,points:14},
-                  {round:12,points:16},
-                  {round:13,points:18},
-                  {round:14,points:20}];
-    
-	var tdData = [{round:0,points:20},
-                  {round:1,points:17},
-                  {round:2,points:15},
-                  {round:3,points:14},
-                  {round:4,points:14},
-                  {round:5,points:14},
-                  {round:6,points:12},
-                  {round:7,points:12},
-                  {round:8,points:10},
-                  {round:9,points:9},
-                  {round:10,points:5},
-                  {round:11,points:5},
-                  {round:12,points:4},
-                  {round:13,points:3},
-                  {round:14,points:0}];
-	
-	function lineChart(node,data){
-		var margin = {top:20,right:20,bottom:20,left:100},
-			width = 1000 - margin.left - margin.right,
-			height = 480;
-		var x = d3.scale.linear().domain([0,14]).range([0, width]);
-		var y = d3.scale.linear().domain([0,20]).range([height, 0]);
-		var xAxis = d3.svg.axis().scale(x).orient("bottom");
-		var yAxis = d3.svg.axis().scale(y).orient("left");
-		var line = d3.svg.line()
-							.x(function(d) { return x(d.round); })
-							.y(function(d) { return y(d.points); });
-		container.append("g")
-					.attr("class","axis graph")
-					.attr("transform","translate("+margin.left+","+(height+margin.top)+")")
-					.call(xAxis);
-		container.append("g")
-					.attr("class","axis graph")
-					.attr("transform","translate("+margin.left+","+margin.top+")")
-					.call(yAxis)
-		
-		container.append("path")
-					.attr("class","line graph")
-					.attr("d",line(data))
-					.attr("transform","translate("+margin.left+","+margin.top+")");
-	}
-	
-  </script>
-  </body>
+
+    </script>
+
+</body>
 </html>

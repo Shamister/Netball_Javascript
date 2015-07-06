@@ -1,0 +1,143 @@
+body {
+    margin : 0;
+    padding : 0;
+    border : 0;
+}
+
+svg {
+    position: absolute;
+}
+text {
+    font-family: Impact;
+    pointer-events: none;
+    cursor: pointer;
+}
+
+.line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+}
+
+.axis path,.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+#pool {
+    fill: Aquamarine;
+}
+
+#pool:hover {
+    fill: GoldenRod;
+}
+
+#pool:hover + .instructionClick {
+    display: block;
+}
+
+.team {
+    fill: yellow;
+}
+
+.season {
+    fill: HotPink;
+}
+
+.country {
+    fill: Chartreuse;
+}
+
+.year {
+    fill: Coral;
+}
+
+.graph {
+    fill: DarkSeaGreen;
+}
+
+.venue {
+    fill: LightSkyBlue;
+}
+
+.title {
+    font-size: 24px;
+    font-family: Impact
+}
+
+.result {
+    font-size: 14px;
+    font-family: Impact
+}
+
+.instructionDrag {
+    font-size: 14px;
+    font-family: Impact
+}
+
+.instructionClick {
+    font-size: 14px;
+    font-family: Impact;
+    display: none;
+}
+
+.disable {
+    opacity: 0.2;
+}
+
+.highlight{
+    stroke-width:5px;
+    stroke: red;
+}
+
+.table{
+    position:absolute;
+    left:50px;
+    top:40px;
+    display:block;
+
+    z-index:1;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th {
+    text-align: left;
+    padding-top: 5px;
+    padding-bottom: 4px;
+    border: 1px solid #98bf21;
+    background-color: #A7C942;
+    color: white;
+    font-weight: bold;
+}
+
+td {
+    border: 1px solid #98bf21;
+    padding: 4px 7px 2px 7px;
+}
+
+tr.alt td {
+    background-color: #EAF2D3;
+}
+
+.barX {
+    font-family: Impact;
+    font-size:10px;
+}
+
+.closeButton{
+    fill:white;
+    stroke:black;
+    stroke-width:1px;
+}
+
+.closeButton:hover{
+    fill:red;
+}
+
+.closeButtonText{
+    font-size:28px;
+    font-family: sans-serif;
+    fill:black;
+}
